@@ -1,11 +1,9 @@
-# DoubanAlumGet (dbablum-get)
+# 豆瓣相册下载器**D**ou**b**an**A**l**b**um\_**Get** (dbab_get)
 
-豆瓣相册下载器
-
-运行 `dbalum_get album_id -n album_name` 可以下载相册中的图片
+运行 `dbabget album_id -n album_name` 可以下载相册中的图片
 
 ```
-$ dbalum_get -h
+$ dbabget -h
 usage: 豆瓣相册下载器 [-h] [-n ALBUM_NAME] album_id
 
 positional arguments:
