@@ -2,6 +2,16 @@
 
 豆瓣相册下载器
 
-python 运行 spider_main.py ，输入豆瓣用户的相册 ID 和相册名称后即可下载该相册
+运行 `dbalum_get album_id -n album_name` 可以下载相册中的图片
 
-下载的图片全部保存在 photos 下的 `相册名称` 文件夹中.
+```
+$ dbalum_get -h
+usage: 豆瓣相册下载器 [-h] [-n ALBUM_NAME] album_id
+
+positional arguments:
+  album_id       要下载的豆瓣相册ID(例如: 1639309626)
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -n ALBUM_NAME  相册名称
+```
