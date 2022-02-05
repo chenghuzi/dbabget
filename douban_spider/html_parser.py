@@ -2,42 +2,56 @@ from bs4 import BeautifulSoup
 import re
 import urllib.parse
 import urllib.request
+from pathlib import Path
+
 
 class HtmlParser(object):
-    def _get_new_urls(self,page_url,soup):
+    def _get_new_urls(self, page_url, soup, album_name):
+        photo_dir = Path(f"photos/{album_name}")
+        photo_dir.mkdir(exist_ok=True)
 
         new_urls = set()
 
-        links = soup.find_all('img',width="201")
+        wrap_links = soup.find_all("a", {"class": "photolst_photo"})
+        links = [_link.find("img") for _link in wrap_links]
+        print(f"共计有{len(links)}张图片")
+        opener = urllib.request.build_opener()
+        opener.addheaders = [
+            (
+                "User-agent",
+                " Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0",
+            )
+        ]
+        urllib.request.install_opener(opener)
         for link in links:
-            photo_url = link['src']
-            photo_url_list = list(photo_url)
-            photo_url_list[37] = 'l'               #将列表中的第37个字符修改为l，从而将图片修改为大图
-            photo_url = ''.join(photo_url_list)      #用空字符串将列表中的所有字符重新连接为字符串
+            photo_url = link["src"].replace("/m/", "/l/")  # 替换 middle to large
 
-            photo_name = photo_url[46:57] #取出连接中的图片名称
-            print('正在下载图片：%s.jpg'% photo_name)
+            photo_name = re.search(r"p[0-9]+.jpg$", photo_url).group(0)
 
-            urllib.request.urlretrieve(photo_url, 'photo/%s.jpg' % photo_name)
+            print(f"正在下载图片 {photo_name}")
+            urllib.request.urlretrieve(photo_url, photo_dir / photo_name)
 
+        paginator = soup.find_all("div", {"class": "paginator"})
+        try:
+            new_urls = [
+                str(p.find("span", {"class": "next"}).find("a")["href"])
+                for p in paginator
+            ]
+            return new_urls
+        except TypeError:
+            return []
+        except Exception as e:
+            raise e
 
-        pages = soup.find_all('a', href=re.compile(r'https://www.douban.com/photos/album/\w*/\?start'))
-        for link in pages:
-            new_url = link['href']
-            new_full_url = urllib.parse.urljoin(page_url, new_url)
-            new_urls.add(new_full_url)
-        return new_urls
-
-    def _get_new_data(self,page_url,soup):
-        res_data={}
-        res_data['url'] = page_url
+    def _get_new_data(self, page_url, soup):
+        res_data = {}
+        res_data["url"] = page_url
         return res_data
 
-    def parse(self,page_url,html_cont):
-        if page_url is None or len(html_cont)==0 :
+    def parse(self, page_url, html_cont, album_name):
+        if page_url is None or len(html_cont) == 0:
             return None
-        soup = BeautifulSoup(html_cont,'html.parser',from_encoding='iso-8859-1')
-        #from_encoding='iso-8859-1'
-        new_urls = self._get_new_urls(page_url,soup)
-        new_data = self._get_new_data(page_url,soup)
-        return new_urls,new_data
+        soup = BeautifulSoup(html_cont, "html.parser", from_encoding="urf-8")
+        new_urls = self._get_new_urls(page_url, soup, album_name)
+        new_data = self._get_new_data(page_url, soup)
+        return new_urls, new_data
