@@ -1,4 +1,4 @@
-# 豆瓣相册下载器**D**ou**b**an**A**l**b**um\_**Get** (dbab_get)
+# 豆瓣相册下载器**D**ou**b**an**A**l**b**um\_**Get** (dbabget)
 
 运行 `dbabget album_id -n album_name` 可以下载相册中的图片
 
