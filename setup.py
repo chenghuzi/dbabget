@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dbabget",
-    version="0.1",
+    version="0.101",
     author="huzi",
     packages=find_packages(),
     entry_points={
