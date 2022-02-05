@@ -7,11 +7,9 @@ from pathlib import Path
 
 class HtmlParser(object):
     def _get_new_urls(self, page_url, soup, album_name):
-        photo_dir = Path(f"photos/{album_name}")
-        photo_dir.mkdir(exist_ok=True)
-
+        photo_dir = Path(f"./db_alums/{album_name}")
+        photo_dir.mkdir(parents=True, exist_ok=True)
         new_urls = set()
-
         wrap_links = soup.find_all("a", {"class": "photolst_photo"})
         links = [_link.find("img") for _link in wrap_links]
         print(f"共计有{len(links)}张图片")
